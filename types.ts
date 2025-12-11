@@ -12,7 +12,11 @@ export type CatAccessory =
   | 'ribbon_blue' 
   | 'ribbon_white' 
   | 'ribbon_black' 
-  | 'ribbon_pink';
+  | 'ribbon_pink'
+  | 'crown'
+  | 'flower'
+  | 'headphones'
+  | 'sunglasses';
 
 export type ExpenseCategory = 'Food' | 'Transport' | 'Shopping' | 'Bills' | 'Entertainment' | 'Other';
 
@@ -57,4 +61,8 @@ export const ACCESSORY_UNLOCKS: Record<number, CatAccessory> = {
   10: 'carrot_hoodie',
   11: 'dino_hoodie',
   12: 'rabbit_hoodie',
+  13: 'flower',
+  14: 'crown',
+  15: 'sunglasses',
+  16: 'headphones',
 };

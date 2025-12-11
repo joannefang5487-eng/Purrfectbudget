@@ -3,6 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 import { X } from 'lucide-react';
 import { Expense, ExpenseCategory } from '../types';
 import { CATEGORY_COLORS } from '../constants';
+import { playSoftClick } from '../utils/soundEffects';
 
 interface StatsModalProps {
   isOpen: boolean;
@@ -27,12 +28,17 @@ const StatsModal: React.FC<StatsModalProps> = ({ isOpen, onClose, expenses, budg
 
   const totalSpent = expenses.reduce((sum, item) => sum + item.amount, 0);
 
+  const handleClose = () => {
+    playSoftClick();
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
       <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-[#5D4037]">Monthly Breakdown</h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full text-gray-400">
+          <button onClick={handleClose} className="p-2 hover:bg-gray-100 rounded-full text-gray-400">
             <X size={24} />
           </button>
         </div>

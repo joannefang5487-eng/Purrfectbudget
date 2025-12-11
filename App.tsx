@@ -6,6 +6,7 @@ import ExpenseForm from './components/ExpenseForm';
 import StatsModal from './components/StatsModal';
 import { Expense, CatPattern, UserStats, CatAccessory, LEVEL_THRESHOLDS, ACCESSORY_UNLOCKS, ExpenseCategory } from './types';
 import { COLORS, CAT_STYLES } from './constants';
+import { playSoftClick } from './utils/soundEffects';
 
 function App() {
   // --- State ---
@@ -22,7 +23,7 @@ function App() {
   // User Progression
   const [userStats, setUserStats] = useState<UserStats>({
     xp: 0,
-    level: 1,
+    level: 20, // Start high to unlock all items for demo
     streak: 0,
     lastLogDate: null
   });
@@ -49,7 +50,7 @@ function App() {
       if (unlockedAccessories.includes(selectedAccessory)) {
           return selectedAccessory;
       }
-      return unlockedAccessories[unlockedAccessories.length - 1];
+      return unlockedAccessories[unlockedAccessories.length - 1] || 'none';
   }, [selectedAccessory, unlockedAccessories]);
 
   // Cat Mood
@@ -68,7 +69,8 @@ function App() {
       const data = JSON.parse(saved);
       setBudget(data.budget || 2000);
       setExpenses(data.expenses || []);
-      setUserStats(data.userStats || { xp: 0, level: 1, streak: 0, lastLogDate: null });
+      // If loading legacy data, ensure level is at least 1, but respect new default if fresh
+      setUserStats(data.userStats || { xp: 0, level: 20, streak: 0, lastLogDate: null });
       setCatPattern(data.catPattern || 'calico');
       setSelectedAccessory(data.selectedAccessory || 'none');
     }
@@ -146,12 +148,14 @@ function App() {
   };
 
   const cycleCatPattern = () => {
+    playSoftClick();
     const nextIndex = (currentPatternIndex + 1) % patterns.length;
     setCurrentPatternIndex(nextIndex);
     setCatPattern(patterns[nextIndex]);
   };
 
   const cycleAccessory = () => {
+    playSoftClick();
     const currentIndex = unlockedAccessories.indexOf(activeAccessory);
     const nextIndex = (currentIndex + 1) % unlockedAccessories.length;
     setSelectedAccessory(unlockedAccessories[nextIndex]);
@@ -258,7 +262,10 @@ function App() {
       <footer className="w-full max-w-md px-6 pb-8 pt-4 flex items-center justify-between gap-4 z-10">
         
         <button 
-            onClick={() => setStatsModalOpen(true)}
+            onClick={() => {
+                playSoftClick();
+                setStatsModalOpen(true);
+            }}
             className="flex-1 h-16 bg-white rounded-2xl shadow-sm border border-orange-50 flex items-center justify-center gap-2 text-[#5D4037] font-bold hover:bg-gray-50 transition-transform active:scale-95"
         >
             <div className="bg-[#E7F3EF] p-2 rounded-full text-[#5CA988]">
@@ -268,13 +275,17 @@ function App() {
         </button>
 
         <button 
-            onClick={() => setExpenseModalOpen(true)}
+            onClick={() => {
+                playSoftClick();
+                setExpenseModalOpen(true);
+            }}
             className="w-20 h-20 bg-[#5D4037] rounded-full shadow-lg shadow-[#5d40374d] flex items-center justify-center text-white hover:bg-[#4A332C] transition-transform active:scale-90 -mt-8 border-4 border-[#FDF8F5]"
         >
             <Plus size={36} strokeWidth={3} />
         </button>
 
         <button 
+            onClick={() => playSoftClick()}
             className="flex-1 h-16 bg-white rounded-2xl shadow-sm border border-orange-50 flex items-center justify-center gap-2 text-[#5D4037] font-bold hover:bg-gray-50 transition-transform active:scale-95 opacity-50 cursor-not-allowed"
             title="Coming Soon"
         >

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { CatPattern, CatAccessory } from '../types';
 import { CAT_STYLES } from '../constants';
+import { playPurr } from '../utils/soundEffects';
 
 interface CatMascotProps {
   pattern: CatPattern;
@@ -15,6 +16,7 @@ const CatMascot: React.FC<CatMascotProps> = ({ pattern, accessory, mood, onClick
   
   const colors = CAT_STYLES[pattern].colors;
   const isHoodie = ['carrot_hoodie', 'dino_hoodie', 'rabbit_hoodie'].includes(accessory);
+  const isHeadphones = accessory === 'headphones';
 
   // Blink logic
   useEffect(() => {
@@ -30,6 +32,7 @@ const CatMascot: React.FC<CatMascotProps> = ({ pattern, accessory, mood, onClick
 
   const handleClick = useCallback(() => {
     setIsPurring(true);
+    playPurr();
     onClick();
     setTimeout(() => setIsPurring(false), 1000);
   }, [onClick]);
@@ -198,10 +201,12 @@ const CatMascot: React.FC<CatMascotProps> = ({ pattern, accessory, mood, onClick
                  {/* Left Ear */}
                  <path d="M80,50 Q60,0 90,40" fill={hoodColor} stroke="#F48FB1" strokeWidth="1"/>
                  <ellipse cx="78" cy="30" rx="4" ry="12" fill="#FFF" transform="rotate(-15 78 30)" opacity="0.8"/>
+                 <ellipse cx="78" cy="30" rx="2" ry="8" fill="#F48FB1" transform="rotate(-15 78 30)" opacity="0.8"/>
                  
                  {/* Right Ear */}
                  <path d="M140,50 Q160,0 130,40" fill={hoodColor} stroke="#F48FB1" strokeWidth="1"/>
                  <ellipse cx="142" cy="30" rx="4" ry="12" fill="#FFF" transform="rotate(15 142 30)" opacity="0.8"/>
+                 <ellipse cx="142" cy="30" rx="2" ry="8" fill="#F48FB1" transform="rotate(15 142 30)" opacity="0.8"/>
             </g>
         );
     }
@@ -219,6 +224,11 @@ const CatMascot: React.FC<CatMascotProps> = ({ pattern, accessory, mood, onClick
                 stroke="rgba(0,0,0,0.05)"
                 strokeWidth="1"
             />
+            {/* Drawstrings */}
+            <path d="M95,140 Q95,150 90,160" fill="none" stroke="#FFF" strokeWidth="2" strokeLinecap="round" />
+            <path d="M125,140 Q125,150 130,160" fill="none" stroke="#FFF" strokeWidth="2" strokeLinecap="round" />
+            <circle cx="90" cy="160" r="3" fill="#FFF" />
+            <circle cx="130" cy="160" r="3" fill="#FFF" />
         </g>
     );
   };
@@ -227,21 +237,29 @@ const CatMascot: React.FC<CatMascotProps> = ({ pattern, accessory, mood, onClick
     // Ribbons
     if (accessory.startsWith('ribbon_') || accessory === 'bow') {
         let ribbonColor = '#E91E63';
+        let ribbonDark = '#C2185B';
         switch(accessory) {
-            case 'ribbon_pink': ribbonColor = '#F48FB1'; break;
-            case 'ribbon_blue': ribbonColor = '#90CAF9'; break;
-            case 'ribbon_red': ribbonColor = '#EF9A9A'; break;
-            case 'ribbon_white': ribbonColor = '#F5F5F5'; break;
-            case 'ribbon_black': ribbonColor = '#78909C'; break; // Pastel Blue-Grey/Black
-            default: ribbonColor = '#F48FB1';
+            case 'ribbon_pink': ribbonColor = '#F48FB1'; ribbonDark = '#F06292'; break;
+            case 'ribbon_blue': ribbonColor = '#90CAF9'; ribbonDark = '#64B5F6'; break;
+            case 'ribbon_red': ribbonColor = '#EF9A9A'; ribbonDark = '#E57373'; break;
+            case 'ribbon_white': ribbonColor = '#F5F5F5'; ribbonDark = '#E0E0E0'; break;
+            case 'ribbon_black': ribbonColor = '#78909C'; ribbonDark = '#546E7A'; break;
+            default: ribbonColor = '#F48FB1'; ribbonDark = '#F06292';
         }
 
         const stroke = accessory === 'ribbon_white' ? '#E0E0E0' : 'none';
 
         return (
-             <g transform="translate(-7, 0)">
-                <path d="M110,140 L100,132 L100,148 Z M125,140 L135,132 L135,148 Z" fill={ribbonColor} stroke={stroke} strokeWidth="1" />
-                <circle cx="117.5" cy="140" r="4" fill={ribbonColor} stroke={stroke} strokeWidth="1" />
+             <g transform="translate(0, 5)">
+                {/* Left Loop */}
+                <path d="M110,140 Q90,120 80,140 Q90,160 110,140" fill={ribbonColor} stroke={stroke} strokeWidth="0.5" />
+                {/* Right Loop */}
+                <path d="M110,140 Q130,120 140,140 Q130,160 110,140" fill={ribbonColor} stroke={stroke} strokeWidth="0.5" />
+                {/* Tails */}
+                <path d="M110,140 Q100,160 95,170 L105,170 L110,150" fill={ribbonDark} />
+                <path d="M110,140 Q120,160 125,170 L115,170 L110,150" fill={ribbonDark} />
+                {/* Center Knot */}
+                <rect x="105" y="135" width="10" height="10" rx="3" fill={ribbonDark} />
              </g>
         );
     }
@@ -250,23 +268,97 @@ const CatMascot: React.FC<CatMascotProps> = ({ pattern, accessory, mood, onClick
         case 'scarf':
             return (
                 <g>
-                    <path d="M85,135 Q110,155 135,135" fill="none" stroke="#FF7043" strokeWidth="10" strokeLinecap="round" />
-                    <path d="M125,140 L130,160" fill="none" stroke="#FF7043" strokeWidth="10" strokeLinecap="round" />
+                    {/* Neck wrap */}
+                    <path d="M80,135 Q110,155 140,135 Q135,160 110,165 Q85,160 80,135" fill="#FF8A65" />
+                    {/* Hanging part */}
+                    <path d="M125,145 L135,175 L150,170 L140,140 Z" fill="#FF7043" />
+                    {/* Stripes */}
+                    <path d="M127,152 L143,148" stroke="#FFE0B2" strokeWidth="2" opacity="0.6"/>
+                    <path d="M130,162 L146,158" stroke="#FFE0B2" strokeWidth="2" opacity="0.6"/>
                 </g>
             );
         case 'glasses':
             return (
-                <g opacity="0.8">
-                    <circle cx="85" cy="95" r="16" fill="none" stroke="#333" strokeWidth="2" />
-                    <circle cx="135" cy="95" r="16" fill="none" stroke="#333" strokeWidth="2" />
-                    <line x1="101" y1="95" x2="119" y2="95" stroke="#333" strokeWidth="2" />
+                <g opacity="0.9">
+                    {/* Left Frame */}
+                    <circle cx="85" cy="95" r="16" fill="rgba(255,255,255,0.2)" stroke="#5D4037" strokeWidth="2.5" />
+                    {/* Right Frame */}
+                    <circle cx="135" cy="95" r="16" fill="rgba(255,255,255,0.2)" stroke="#5D4037" strokeWidth="2.5" />
+                    {/* Bridge */}
+                    <path d="M101,95 Q110,90 119,95" fill="none" stroke="#5D4037" strokeWidth="2.5" />
+                    {/* Shine */}
+                    <path d="M80,88 Q85,85 90,88" fill="none" stroke="white" strokeWidth="2" opacity="0.6" />
+                    <path d="M130,88 Q135,85 140,88" fill="none" stroke="white" strokeWidth="2" opacity="0.6" />
+                </g>
+            );
+        case 'sunglasses':
+            return (
+                <g>
+                    {/* Dark Lenses */}
+                    <path d="M68,95 C68,85 80,85 85,85 C95,85 102,85 102,95 C102,110 85,115 68,95" fill="#37474F" />
+                    <path d="M118,95 C118,85 125,85 135,85 C145,85 152,85 152,95 C152,110 135,115 118,95" fill="#37474F" />
+                    {/* Bridge */}
+                    <line x1="102" y1="90" x2="118" y2="90" stroke="#37474F" strokeWidth="3" />
+                    {/* Reflections */}
+                    <ellipse cx="78" cy="92" rx="5" ry="2" fill="white" opacity="0.3" transform="rotate(-20 78 92)"/>
+                    <ellipse cx="128" cy="92" rx="5" ry="2" fill="white" opacity="0.3" transform="rotate(-20 128 92)"/>
                 </g>
             );
         case 'hat':
             return (
-                <g transform="translate(0, -15)">
-                    <path d="M85,50 L135,50 L110,10 Z" fill="#FFC107" />
-                    <ellipse cx="110" cy="50" rx="30" ry="8" fill="#FFB300" />
+                <g transform="translate(0, -20)">
+                    {/* Brim */}
+                    <ellipse cx="110" cy="60" rx="35" ry="10" fill="#FDD835" />
+                    {/* Dome */}
+                    <path d="M85,60 Q85,25 110,25 Q135,25 135,60" fill="#FBC02D" />
+                    {/* Band */}
+                    <path d="M86,55 Q110,65 134,55" fill="none" stroke="#5D4037" strokeWidth="4" />
+                </g>
+            );
+        case 'crown':
+            return (
+                 <g transform="translate(0, -30)">
+                     {/* Back part for depth */}
+                     <path d="M90,55 L90,40 L110,35 L130,40 L130,55" fill="#FFC107" />
+                     {/* Front part */}
+                     <path d="M80,55 L80,35 L95,48 L110,25 L125,48 L140,35 L140,55 Z" fill="#FFD54F" stroke="#FFA000" strokeWidth="1" strokeLinejoin="round" />
+                     {/* Base band */}
+                     <path d="M80,55 Q110,60 140,55 L140,50 Q110,55 80,50 Z" fill="#FFA000" />
+                     {/* Gems */}
+                     <circle cx="80" cy="35" r="3" fill="#E91E63" stroke="#FFF" strokeWidth="0.5"/>
+                     <circle cx="110" cy="25" r="4" fill="#2196F3" stroke="#FFF" strokeWidth="0.5"/>
+                     <circle cx="140" cy="35" r="3" fill="#E91E63" stroke="#FFF" strokeWidth="0.5"/>
+                 </g>
+            );
+        case 'flower':
+            return (
+                <g transform="translate(45, 45)">
+                     {/* Petals */}
+                     {[0, 60, 120, 180, 240, 300].map(angle => (
+                        <ellipse 
+                            key={angle}
+                            cx="0" cy="-8" rx="4" ry="8" 
+                            fill="#F8BBD0" 
+                            transform={`rotate(${angle} 0 0)`} 
+                            stroke="#F48FB1" 
+                            strokeWidth="0.5"
+                        />
+                     ))}
+                     {/* Center */}
+                     <circle cx="0" cy="0" r="5" fill="#FFEB3B" stroke="#FBC02D" strokeWidth="0.5" />
+                </g>
+            );
+        case 'headphones':
+            return (
+                <g transform="translate(0, -5)">
+                    {/* Band */}
+                    <path d="M55,95 C55,20 165,20 165,95" fill="none" stroke="#CE93D8" strokeWidth="8" strokeLinecap="round" />
+                    {/* Ear Cups */}
+                    <rect x="45" y="80" width="20" height="35" rx="8" fill="#AB47BC" />
+                    <rect x="155" y="80" width="20" height="35" rx="8" fill="#AB47BC" />
+                    {/* Detail on cups */}
+                    <circle cx="55" cy="97" r="5" fill="#CE93D8" />
+                    <circle cx="165" cy="97" r="5" fill="#CE93D8" />
                 </g>
             );
         default: return null;
@@ -297,8 +389,8 @@ const CatMascot: React.FC<CatMascotProps> = ({ pattern, accessory, mood, onClick
         <ellipse cx="90" cy="180" rx="9" ry="7" fill="#FFF" stroke="#EEE" />
         <ellipse cx="130" cy="180" rx="9" ry="7" fill="#FFF" stroke="#EEE" />
 
-        {/* Ears - Hidden if Hoodie is active */}
-        {!isHoodie && (
+        {/* Ears - Hidden if Hoodie OR Headphones is active */}
+        {!isHoodie && !isHeadphones && (
             <>
                 <path d="M68,65 L55,25 L100,55" fill={pattern === 'ragdoll' ? colors.patch1 : colors.base} stroke="#E0E0E0" strokeWidth="1" />
                 <path d="M72,60 L65,35 L85,55" fill="#FFCCBC" /> 

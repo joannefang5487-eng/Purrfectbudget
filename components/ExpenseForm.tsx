@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Check } from 'lucide-react';
 import { CATEGORIES, ExpenseCategory } from '../types';
 import { CATEGORY_COLORS } from '../constants';
+import { playSoftClick } from '../utils/soundEffects';
 
 interface ExpenseFormProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSubmit }) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    playSoftClick();
     const val = parseFloat(amount);
     if (!isNaN(val) && val > 0) {
       onSubmit(val, category, note);
@@ -28,12 +30,17 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSubmit }) 
     }
   };
 
+  const handleClose = () => {
+    playSoftClick();
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
       <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl transform transition-all scale-100 animate-[fadeIn_0.2s_ease-out]">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-[#5D4037]">Add Expense</h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full text-gray-400">
+          <button onClick={handleClose} className="p-2 hover:bg-gray-100 rounded-full text-gray-400">
             <X size={24} />
           </button>
         </div>
@@ -63,7 +70,10 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSubmit }) 
                 <button
                   key={cat}
                   type="button"
-                  onClick={() => setCategory(cat)}
+                  onClick={() => {
+                    playSoftClick();
+                    setCategory(cat);
+                  }}
                   className={`p-2 rounded-lg text-xs font-semibold transition-all ${
                     category === cat 
                       ? 'ring-2 ring-offset-1 ring-gray-300 scale-105 shadow-sm' 
